@@ -124,7 +124,7 @@ def analyze_image(
         triple_riding_result = detect_triple_riding(image_path)
     except Exception as e:
         logger.error("Triple riding detection failed: %s", e)
-        # Gracefully handle failure if yolov8n model cannot be loaded
+        # Gracefully handle failure if yolov8l model cannot be loaded
         triple_riding_result = {
             "is_violation": False,
             "max_rider_count": 0,

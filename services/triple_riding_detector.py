@@ -1,7 +1,7 @@
 """
 TrafficVision AI — Triple Riding Detector
 =========================================
-Uses YOLOv8n to detect motorcycles and persons, and applies filtering
+Uses YOLOv8l to detect motorcycles and persons, and applies filtering
 to associate riders with bikes and identify triple riding violations.
 """
 
@@ -26,7 +26,7 @@ OVERLAP_THRESHOLD = 0.23
 BIKE_EXPAND_RATIO = 0.1   
 MAX_RIDERS        = 4      
 
-_MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "yolov8n.pt"
+_MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "yolov8l.pt"
 _model: YOLO | None = None
 
 def _get_model() -> YOLO:
@@ -34,15 +34,15 @@ def _get_model() -> YOLO:
     if _model is None:
         try:
             if not _MODEL_PATH.exists():
-                logger.info("YOLOv8n model not found at %s. Ultralytics will download it.", _MODEL_PATH)
+                logger.info("YOLOv8l model not found at %s. Ultralytics will download it.", _MODEL_PATH)
             
-            # YOLO will automatically download to the current working directory if just given "yolov8n.pt"
-            # Actually, ultralytics YOLO("yolov8n.pt") downloads to current dir. We will just pass the absolute path.
+            # YOLO will automatically download to the current working directory if just given "yolov8l.pt"
+            # Actually, ultralytics YOLO("yolov8l.pt") downloads to current dir. We will just pass the absolute path.
             # If the file isn't there, it might fail or download. Passing the filename directly is safer for auto-download.
-            _model = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8n.pt")
-            logger.info("YOLOv8n loaded for Triple Riding Detection")
+            _model = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8l.pt")
+            logger.info("YOLOv8l loaded for Triple Riding Detection")
         except Exception:
-            logger.exception("Failed to initialize YOLOv8n for Triple Riding.")
+            logger.exception("Failed to initialize YOLOv8l for Triple Riding.")
             raise
     return _model
 
