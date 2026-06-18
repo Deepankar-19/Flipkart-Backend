@@ -22,6 +22,8 @@ from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,6 +51,16 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/outputs", StaticFiles(directory=str(Path(__file__).resolve().parent / "outputs")), name="outputs")
 
 # ---------------------------------------------------------------------------
 # Temporary upload directory
