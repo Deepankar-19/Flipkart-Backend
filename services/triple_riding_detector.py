@@ -26,23 +26,25 @@ OVERLAP_THRESHOLD = 0.23
 BIKE_EXPAND_RATIO = 0.1   
 MAX_RIDERS        = 4      
 
-# ---------------------------------------------------------------------------
-# Model Singleton
-# ---------------------------------------------------------------------------
 _MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "yolov8n.pt"
+_model: YOLO | None = None
 
-try:
-    if not _MODEL_PATH.exists():
-        logger.info("YOLOv8n model not found at %s. Ultralytics will download it.", _MODEL_PATH)
-    
-    # YOLO will automatically download to the current working directory if just given "yolov8n.pt"
-    # Actually, ultralytics YOLO("yolov8n.pt") downloads to current dir. We will just pass the absolute path.
-    # If the file isn't there, it might fail or download. Passing the filename directly is safer for auto-download.
-    model: YOLO = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8n.pt")
-    logger.info("YOLOv8n loaded for Triple Riding Detection")
-except Exception:
-    logger.exception("Failed to initialize YOLOv8n for Triple Riding.")
-    raise
+def _get_model() -> YOLO:
+    global _model
+    if _model is None:
+        try:
+            if not _MODEL_PATH.exists():
+                logger.info("YOLOv8n model not found at %s. Ultralytics will download it.", _MODEL_PATH)
+            
+            # YOLO will automatically download to the current working directory if just given "yolov8n.pt"
+            # Actually, ultralytics YOLO("yolov8n.pt") downloads to current dir. We will just pass the absolute path.
+            # If the file isn't there, it might fail or download. Passing the filename directly is safer for auto-download.
+            _model = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8n.pt")
+            logger.info("YOLOv8n loaded for Triple Riding Detection")
+        except Exception:
+            logger.exception("Failed to initialize YOLOv8n for Triple Riding.")
+            raise
+    return _model
 
 # ---------------------------------------------------------------------------
 # Helper Functions
@@ -102,9 +104,9 @@ def detect_triple_riding(image_input: str | Path | np.ndarray) -> dict[str, Any]
         image_path = Path(image_input)
         if not image_path.exists():
             raise FileNotFoundError(f"Input image not found: {image_path}")
-        results = model(str(image_path), verbose=False)[0]
+        results = _get_model().predict(source=str(image_path), verbose=False)[0]
     else:
-        results = model(image_input, verbose=False)[0]
+        results = _get_model().predict(source=image_input, verbose=False)[0]
 
     motorcycles = []
     persons = []

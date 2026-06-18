@@ -36,15 +36,19 @@ CLASS_MAP: dict[int, str] = {
 # Model singleton
 # ---------------------------------------------------------------------------
 _MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "helmet_detector.pt"
+_model: YOLO | None = None
 
-if not _MODEL_PATH.exists():
-    raise FileNotFoundError(
-        f"YOLO model not found at {_MODEL_PATH}. "
-        "Ensure 'models/helmet_detector.pt' is present in the backend root."
-    )
-
-model: YOLO = YOLO(str(_MODEL_PATH))
-logger.info("YOLO model loaded from %s", _MODEL_PATH)
+def _get_model() -> YOLO:
+    global _model
+    if _model is None:
+        if not _MODEL_PATH.exists():
+            raise FileNotFoundError(
+                f"YOLO model not found at {_MODEL_PATH}. "
+                "Ensure 'models/helmet_detector.pt' is present in the backend root."
+            )
+        _model = YOLO(str(_MODEL_PATH))
+        logger.info("YOLO model loaded from %s", _MODEL_PATH)
+    return _model
 
 
 # ---------------------------------------------------------------------------
@@ -77,7 +81,7 @@ def detect_objects(
         raise FileNotFoundError(f"Image not found: {image_path}")
 
     # Run inference — returns a list of Results objects (one per image)
-    results = model.predict(
+    results = _get_model().predict(
         source=str(image_path),
         conf=confidence_threshold,
         verbose=False,
