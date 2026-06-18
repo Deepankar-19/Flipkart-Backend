@@ -1,7 +1,7 @@
 """
 TrafficVision AI — Triple Riding Detector
 =========================================
-Uses YOLOv8l to detect motorcycles and persons, and applies filtering
+Uses YOLOv8n to detect motorcycles and persons, and applies filtering
 to associate riders with bikes and identify triple riding violations.
 """
 
@@ -29,21 +29,19 @@ MAX_RIDERS        = 4
 # ---------------------------------------------------------------------------
 # Model Singleton
 # ---------------------------------------------------------------------------
-_MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "yolov8m.pt"
+_MODEL_PATH: Path = Path(__file__).resolve().parent.parent / "models" / "yolov8n.pt"
 
-# Load model (downloads automatically to the directory if not found)
 try:
     if not _MODEL_PATH.exists():
-        logger.info("YOLOv8m model not found at %s. Ultralytics will download it.", _MODEL_PATH)
+        logger.info("YOLOv8n model not found at %s. Ultralytics will download it.", _MODEL_PATH)
     
-    # YOLO will automatically download to the current working directory if just given "yolov8m.pt"
-    # To force it into models/, we pass the absolute path if it exists or let it download.
-    # Actually, ultralytics YOLO("yolov8m.pt") downloads to current dir. We will just pass the absolute path.
-    # If the file doesn't exist at the absolute path, it tries to download it to that path or current dir.
-    model: YOLO = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8m.pt")
-    logger.info("YOLOv8m loaded for Triple Riding Detection")
-except Exception as e:
-    logger.exception("Failed to initialize YOLOv8m for Triple Riding.")
+    # YOLO will automatically download to the current working directory if just given "yolov8n.pt"
+    # Actually, ultralytics YOLO("yolov8n.pt") downloads to current dir. We will just pass the absolute path.
+    # If the file isn't there, it might fail or download. Passing the filename directly is safer for auto-download.
+    model: YOLO = YOLO(str(_MODEL_PATH) if _MODEL_PATH.exists() else "yolov8n.pt")
+    logger.info("YOLOv8n loaded for Triple Riding Detection")
+except Exception:
+    logger.exception("Failed to initialize YOLOv8n for Triple Riding.")
     raise
 
 # ---------------------------------------------------------------------------
