@@ -28,7 +28,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from services.violation_engine import analyze_image
+# Deferred import of analyze_image to prevent startup timeout on Render
 
 # ---------------------------------------------------------------------------
 # Logging configuration
@@ -125,6 +125,7 @@ async def analyze(
 
     # --- Run analysis ---------------------------------------------------------
     try:
+        from services.violation_engine import analyze_image
         report = analyze_image(temp_path)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
